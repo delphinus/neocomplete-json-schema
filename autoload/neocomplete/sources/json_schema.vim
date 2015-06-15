@@ -18,7 +18,7 @@ function! neocomplete#sources#json_schema#define()
   return s:source
 endfunction
 
-function! s:source#gather_candidates(...)
+function! s:source.gather_candidates(...)
   return deepcopy(g:neocomplete_json_schema_dict.refs)
 endfunction
 
