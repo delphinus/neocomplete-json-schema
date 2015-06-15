@@ -16,42 +16,27 @@ function! neocomplete#sources#json_schema#helper#init()
     return
   endif
 
-  if neocomplete#sources#json_schema#helper#has_candidate_cache()
-    call neocomplete#sources#json_schema#helper#load_candidate_cache()
+  call s:File.mkdir_nothrow(s:cache_dir, 'p')
+
+  let repo_name = neocomplete#sources#json_schema#helper#repo_name()
+  if s:cache.has(repo_name)
+    let b:neocomplete_json_schema_candidate_cache = s:cache.get(repo_name)
   else
-    call neocomplete#sources#json_schema#helper#create_candidate_cache()
+    let b:neocomplete_json_schema_candidate_cache = neocomplete#sources#json_schema#helper#create_candidate_cache()
+    call s:cache.set(repo, b:neocomplete_json_schema_candidate_cache)
+
+    redraw!
+    echo '[neocomplete-json-schema] created candidate cache'
   endif
 endfunction
 
 function! neocomplete#sources#json_schema#helper#create_candidate_cache()
-  let [key, value] = neocomplete#sources#json_schema#helper#load_refs()
-
-  let b:neocomplete_json_schema_candidate_cache = value
-  call s:File.mkdir_nothrow(s:cache_dir, 'p')
-  call s:cache.set(key, value)
-
-  redraw!
-  echo '[neocomplete-json-schema] created candidate cache'
-endfunction
-
-function! neocomplete#sources#json_schema#helper#has_candidate_cache()
-  let repo_name = neocomplete#sources#json_schema#helper#repo_name()
-  return s:cache.has(repo_name)
-endfunction
-
-function! neocomplete#sources#json_schema#helper#load_candidate_cache()
-  let repo_name = neocomplete#sources#json_schema#helper#repo_name()
-  let b:neocomplete_json_schema_candidate_cache = s:cache.get(repo_name)
+  return ['fukuoka', 'oita', 'miyazaki', 'kagoshima', 'kumamoto', 'saga', 'nagasaki']
 endfunction
 
 function! neocomplete#sources#json_schema#helper#repo_name()
   let b:neocomplete_json_schema_repo_name = 'some-repo'
   return b:neocomplete_json_schema_repo_name
-endfunction
-
-function! neocomplete#sources#json_schema#helper#load_refs()
-  let repo_name = neocomplete#sources#json_schema#helper#repo_name()
-  return [repo_name, ['fukuoka', 'oita', 'miyazaki', 'kagoshima', 'kumamoto', 'saga', 'nagasaki']]
 endfunction
 
 let &cpo = s:save_cpo
