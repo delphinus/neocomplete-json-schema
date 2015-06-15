@@ -7,7 +7,7 @@ let s:Message = s:V.import('Vim.Message')
 let s:source = {
       \ 'name':        'json_schema',
       \ 'kind':        'manual',
-      \ 'filetypes':   {'json': 1},
+      \ 'filetypes':   {'javascript': 1},
       \ 'mark':        '[json]',
       \ 'is_volatile': 1,
       \ 'rank':        100,
