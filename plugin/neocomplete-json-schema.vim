@@ -10,7 +10,6 @@ augroup NeoCompleteJsonSchema
   autocmd!
   autocmd BufRead,BufNewFile *.json
         \ if getline(1) . getline(2) =~# '\$schema'
-        \   | let b:neocomplete_json_schema_enabled = 1
         \   | call neocomplete#sources#json_schema#helper#init()
         \   | endif
 augroup END
