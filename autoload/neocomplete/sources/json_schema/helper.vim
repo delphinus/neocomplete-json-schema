@@ -12,7 +12,7 @@ let s:cache_dir = s:work_dir . 'cache/'
 let s:cache = s:Cache.new({'cache_dir': s:cache_dir})
 
 function! neocomplete#sources#json_schema#helper#make_dict(...)
-  let [key, value] = neocomplete#sources#json_schema#helper#get_refs()
+  let [key, value] = neocomplete#sources#json_schema#helper#load_refs()
 
   let g:neocomplete_json_schema_dict.refs = value
   call s:File.mkdir_nothrow(s:cache_dir, 'p')
@@ -22,8 +22,24 @@ function! neocomplete#sources#json_schema#helper#make_dict(...)
   echo 'finish.'
 endfunction
 
-function! neocomplete#sources#json_schema#helper#get_refs()
-  return ['some-repo', ['a', 'b', 'c', 'd', 'e']]
+function! neocomplete#sources#json_schema#helper#has_candidate_cache()
+  let repo_name = neocomplete#sources#json_schema#helper#repo_name()
+  return s:cache.has(repo_name)
+endfunction
+
+function! neocomplete#sources#json_schema#helper#load_candidate_cache()
+  let repo_name = neocomplete#sources#json_schema#helper#repo_name()
+  let b:neocomplete#sources#json_schema#candidate_cache = s:cache.get(repo_name)
+endfunction
+
+function! neocomplete#sources#json_schema#helper#repo_name()
+  let b:neocomplete#sources#json_schema#helper#repo_name = 'some-repo'
+  return b:neocomplete#sources#json_schema#helper#repo_name
+endfunction
+
+function! neocomplete#sources#json_schema#helper#load_refs()
+  let repo_name = neocomplete#sources#json_schema#helper#repo_name()
+  return [repo_name, ['a', 'b', 'c', 'd', 'e']]
 endfunction
 
 let &cpo = s:save_cpo
