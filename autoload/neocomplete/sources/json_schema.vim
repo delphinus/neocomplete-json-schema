@@ -19,18 +19,10 @@ function! neocomplete#sources#json_schema#define()
 endfunction
 
 function! s:source.gather_candidates(...)
-  return deepcopy(g:neocomplete_json_schema_dict.refs)
-endfunction
-
-function! s:source.hooks.on_init(context)
-  if neocomplete#sources#json_schema#helper#has_candidate_cache()
-    call neocomplete#sources#json_schema#helper#load_candidate_cache()
-  endif
-
-  if empty(g:neocomplete_json_schema_dict.refs)
-    call s:Message.warn('no dictionary. run command :JsonSchemaMakeDict')
-    sleep 3
-    return
+  if ! exists('b:neocomplete_json_schema_enabled')
+    return []
+  else
+    return b:neocomplete_json_schema_candidate_cache
   endif
 endfunction
 

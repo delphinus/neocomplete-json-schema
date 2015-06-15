@@ -11,15 +11,27 @@ let s:work_dir = g:neocomplete_json_schema_directory . '/'
 let s:cache_dir = s:work_dir . 'cache/'
 let s:cache = s:Cache.new({'cache_dir': s:cache_dir})
 
-function! neocomplete#sources#json_schema#helper#make_dict(...)
+function! neocomplete#sources#json_schema#helper#init()
+  if exists('b:neocomplete_json_schema_candidate_cache')
+    return
+  endif
+
+  if neocomplete#sources#json_schema#helper#has_candidate_cache()
+    call neocomplete#sources#json_schema#helper#load_candidate_cache()
+  else
+    call neocomplete#sources#json_schema#helper#create_candidate_cache()
+  endif
+endfunction
+
+function! neocomplete#sources#json_schema#helper#create_candidate_cache()
   let [key, value] = neocomplete#sources#json_schema#helper#load_refs()
 
-  let g:neocomplete_json_schema_dict.refs = value
+  let b:neocomplete_json_schema_candidate_cache = value
   call s:File.mkdir_nothrow(s:cache_dir, 'p')
   call s:cache.set(key, value)
 
   redraw!
-  echo 'finish.'
+  echo '[neocomplete-json-schema] created candidate cache'
 endfunction
 
 function! neocomplete#sources#json_schema#helper#has_candidate_cache()
