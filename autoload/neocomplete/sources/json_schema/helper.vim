@@ -10,7 +10,7 @@ let s:Prelude  = s:V.import('Prelude')
 let s:JSON     = s:V.import('Web.JSON')
 
 let s:schema_glob = s:Filepath.join(g:neocomplete_json_schema_directory, '**/*.json')
-let s:cache_dir = s.Filepath.join(g:neocomplete_json_schema_work_dir, 'cache')
+let s:cache_dir = s:Filepath.join(g:neocomplete_json_schema_work_dir, 'cache')
 let s:cache = s:Cache.new({'cache_dir': s:cache_dir})
 
 function! neocomplete#sources#json_schema#helper#init() abort
@@ -18,20 +18,15 @@ function! neocomplete#sources#json_schema#helper#init() abort
     return
   endif
 
-  if ! neocomplete#util#has_vimproc()
-    let b:neocomplete_json_schema_enabled = 0
-    call s:Message.error('[neocomplete-json-schema] need vimproc')
-    return
-  endif
-
   call s:File.mkdir_nothrow(s:cache_dir, 'p')
 
   let b:neocomplete_json_schema_repo_name = neocomplete#sources#json_schema#helper#repo_name()
   if b:neocomplete_json_schema_repo_name == ''
-    s:Message.warn('cannot determine project root directory')
+    call s:Message.warn('cannot determine project root directory')
     return
   endif
 
+  echomsg b:neocomplete_json_schema_repo_name
   if s:cache.has(b:neocomplete_json_schema_repo_name)
     let b:neocomplete_json_schema_candidate_cache = s:cache.get(b:neocomplete_json_schema_repo_name)
   else
@@ -45,8 +40,8 @@ function! neocomplete#sources#json_schema#helper#init() abort
   let b:neocomplete_json_schema_enabled = 1
 endfunction
 
-function! neocomplete#sources#json_schema#helper#create_candidate_cache()
-  let schemas = s:Prelude.glob(s:schema_glob)
+function! neocomplete#sources#json_schema#helper#create_candidate_cache() abort
+  let schemas = s:Prelude.glob(s:Filepath.join(b:neocomplete_json_schema_repo_name, s:schema_glob))
   let candidates = {}
 
   for filename in schemas
@@ -54,35 +49,36 @@ function! neocomplete#sources#json_schema#helper#create_candidate_cache()
     if s:Prelude.is_list(definitions)
       let candidates[filename] = definitions
     endif
+    unlet definitions
   endfor
 
   return candidates
 endfunction
 
-function! neocomplete#sources#json_schema#helper#read_definitions(filename)
+function! neocomplete#sources#json_schema#helper#read_definitions(filename) abort
   let decoded = neocomplete#sources#json_schema#helper#decode_json(a:filename)
   if ! s:Prelude.is_dict(decoded)
-    return
+    return 0
   endif
   let definitions_dict = get(decoded, 'definitions')
-  if ! s:Prelude.is_dict(definitions_dict))
-    return
+  if ! s:Prelude.is_dict(definitions_dict)
+    return 0
   endif
   return keys(definitions_dict)
 endfunction
 
-function! neocomplete#sources#json_schema#helper#decode_json(filename)
+function! neocomplete#sources#json_schema#helper#decode_json(filename) abort
   let json = join(readfile(a:filename))
   try
-    let decoded = s:JSON.decode(a:json)
+    let decoded = s:JSON.decode(json)
   catch
     call s:Message.error('JSON broken: ' . a:filename)
-    finish
+    return
   endtry
   return decoded
 endfunction
 
-function! neocomplete#sources#json_schema#helper#repo_name()
+function! neocomplete#sources#json_schema#helper#repo_name() abort
   let b:neocomplete_json_schema_repo_name = s:Prelude.path2project_directory(expand('%'))
   return b:neocomplete_json_schema_repo_name
 endfunction
