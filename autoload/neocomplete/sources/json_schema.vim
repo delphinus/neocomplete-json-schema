@@ -22,8 +22,12 @@ function! s:source.gather_candidates(...)
   if ! exists('b:neocomplete_json_schema_enabled')
     return []
   else
-    return b:neocomplete_json_schema_candidate_cache
+    return b:neocomplete_json_schema_candidates
   endif
+endfunction
+
+function! s:source.get_complete_position(context)
+  return matchend(a:context.input, '"\$ref"\s*:\s*"')
 endfunction
 
 let &cpo = s:save_cpo

@@ -28,14 +28,23 @@ function! neocomplete#sources#json_schema#helper#init() abort
 
   echomsg b:neocomplete_json_schema_repo_name
   if s:cache.has(b:neocomplete_json_schema_repo_name)
-    let b:neocomplete_json_schema_candidate_cache = s:cache.get(b:neocomplete_json_schema_repo_name)
+    let candidate_cache = s:cache.get(b:neocomplete_json_schema_repo_name)
   else
-    let b:neocomplete_json_schema_candidate_cache = neocomplete#sources#json_schema#helper#create_candidate_cache()
+    let candidate_cache = neocomplete#sources#json_schema#helper#create_candidate_cache()
     call s:cache.set(b:neocomplete_json_schema_repo_name, b:neocomplete_json_schema_candidate_cache)
 
     redraw!
     echo '[neocomplete-json-schema] created candidate cache'
   endif
+
+  let b:neocomplete_json_schema_candidates = []
+  for filename in keys(candidate_cache)
+    let cmd = printf("perl -MFile::Spec -e 'print File::Spec->abs2rel(\"%s\", \"%s\")'", filename, expand('%:p:h'))
+    let related = substitute(system(cmd), '\n$', '', '')
+    for candidate in candidate_cache[filename]
+      call add(b:neocomplete_json_schema_candidates, related . '#definitions/' . candidate)
+    endfor
+  endfor
 
   let b:neocomplete_json_schema_enabled = 1
 endfunction
