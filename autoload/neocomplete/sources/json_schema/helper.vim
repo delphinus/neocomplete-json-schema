@@ -7,6 +7,7 @@ let s:File     = s:V.import('System.File')
 let s:Filepath = s:V.import('System.Filepath')
 let s:Cache    = s:V.import('System.Cache.File')
 let s:Prelude  = s:V.import('Prelude')
+let s:JSON     = s:V.import('Web.JSON')
 
 let s:schema_glob = s:Filepath.join(g:neocomplete_json_schema_directory, '**/*.json')
 let s:cache_dir = s.Filepath.join(g:neocomplete_json_schema_work_dir, 'cache')
@@ -45,7 +46,40 @@ function! neocomplete#sources#json_schema#helper#init() abort
 endfunction
 
 function! neocomplete#sources#json_schema#helper#create_candidate_cache()
-  return ['fukuoka', 'oita', 'miyazaki', 'kagoshima', 'kumamoto', 'saga', 'nagasaki']
+  let schemas = s:Prelude.glob(s:schema_glob)
+  let candidates = {}
+
+  for filename in schemas
+    let definitions = neocomplete#sources#json_schema#helper#read_definitions(filename)
+    if s:Prelude.is_list(definitions)
+      let candidates[filename] = definitions
+    endif
+  endfor
+
+  return candidates
+endfunction
+
+function! neocomplete#sources#json_schema#helper#read_definitions(filename)
+  let decoded = neocomplete#sources#json_schema#helper#decode_json(a:filename)
+  if ! s:Prelude.is_dict(decoded)
+    return
+  endif
+  let definitions_dict = get(decoded, 'definitions')
+  if ! s:Prelude.is_dict(definitions_dict))
+    return
+  endif
+  return keys(definitions_dict)
+endfunction
+
+function! neocomplete#sources#json_schema#helper#decode_json(filename)
+  let json = join(readfile(a:filename))
+  try
+    let decoded = s:JSON.decode(a:json)
+  catch
+    call s:Message.error('JSON broken: ' . a:filename)
+    finish
+  endtry
+  return decoded
 endfunction
 
 function! neocomplete#sources#json_schema#helper#repo_name()
