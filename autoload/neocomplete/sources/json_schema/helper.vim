@@ -8,8 +8,8 @@ let s:Filepath = s:V.import('System.Filepath')
 let s:Cache    = s:V.import('System.Cache.File')
 let s:Prelude  = s:V.import('Prelude')
 
-let s:work_dir = g:neocomplete_json_schema_directory . '/'
-let s:cache_dir = s:work_dir . 'cache/'
+let s:schema_glob = s:Filepath.join(g:neocomplete_json_schema_directory, '**/*.json')
+let s:cache_dir = s.Filepath.join(g:neocomplete_json_schema_work_dir, 'cache')
 let s:cache = s:Cache.new({'cache_dir': s:cache_dir})
 
 function! neocomplete#sources#json_schema#helper#init() abort
