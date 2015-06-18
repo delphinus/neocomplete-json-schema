@@ -10,7 +10,7 @@ augroup NeoCompleteJsonSchema
   autocmd!
   autocmd BufRead,BufNewFile *.json
         \ if getline(1) . getline(2) =~# '\$schema'
-        \   | call neocomplete#sources#json_schema#helper#init()
+        \   | execute 'call neocomplete#sources#json_schema#helper#init("' . escape(expand('<sfile>:p:h:h'), '"') . '")'
         \   | endif
 augroup END
 

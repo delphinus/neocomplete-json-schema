@@ -13,7 +13,7 @@ let s:schema_glob = s:Filepath.join(g:neocomplete_json_schema_directory, '**/*.j
 let s:cache_dir = s:Filepath.join(g:neocomplete_json_schema_work_dir, 'cache')
 let s:cache = s:Cache.new({'cache_dir': s:cache_dir})
 
-function! neocomplete#sources#json_schema#helper#init() abort
+function! neocomplete#sources#json_schema#helper#init(plugin_top_dir) abort
   if exists('b:neocomplete_json_schema_candidate_cache')
     return
   endif
@@ -30,23 +30,23 @@ function! neocomplete#sources#json_schema#helper#init() abort
   if s:cache.has(b:neocomplete_json_schema_repo_name)
     let candidate_cache = s:cache.get(b:neocomplete_json_schema_repo_name)
   else
-    let candidate_cache = neocomplete#sources#json_schema#helper#create_candidate_cache()
-    call s:cache.set(b:neocomplete_json_schema_repo_name, b:neocomplete_json_schema_candidate_cache)
+    let raw_candidate_cache = neocomplete#sources#json_schema#helper#create_candidate_cache()
+    let candidate_cache = s:JSON.encode(raw_candidate_cache)
+    call s:cache.set(b:neocomplete_json_schema_repo_name, candidate_cache)
 
     redraw!
     echo '[neocomplete-json-schema] created candidate cache'
   endif
 
   let b:neocomplete_json_schema_candidates = []
-  for filename in keys(candidate_cache)
-    let cmd = printf("perl -MFile::Spec -e 'print File::Spec->abs2rel(\"%s\", \"%s\")'", filename, expand('%:p:h'))
-    let related = substitute(system(cmd), '\n$', '', '')
-    for candidate in candidate_cache[filename]
-      call add(b:neocomplete_json_schema_candidates, related . '#definitions/' . candidate)
-    endfor
-  endfor
-
-  let b:neocomplete_json_schema_enabled = 1
+  let b:neocomplete_json_schema_candidates_json = ''
+  let cmd = a:plugin_top_dir . '/bin/relpath.rb'
+  let commandline = printf('%s "%s" "%s"',
+        \ cmd,
+        \ escape(candidate_cache, '"'),
+        \ escape(expand('%:p'), '"'))
+  let async = neocomplete#sources#json_schema#helper#async#new()
+  call async.run(commandline, 'b:neocomplete_json_schema_candidates_json')
 endfunction
 
 function! neocomplete#sources#json_schema#helper#create_candidate_cache() abort
