@@ -31,9 +31,8 @@ function! s:async.run(command, resultvar) abort
     autocmd CursorHold * call s:Reunions.update_in_cursorhold(1)
   augroup END
   let self.process._autocmd = 1
-
+  let self.process._updatetime = &updatetime
   let &updatetime = self.config.updatetime
-  let self.process._updatetime = self.config.updatetime
 endfunction
 
 function! neocomplete#sources#json_schema#helper#async#new() abort
