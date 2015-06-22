@@ -40,6 +40,8 @@ function! s:pathname.relative_path_from(basepath) abort
   for i in range(level + 1, len(splitted) - 1)
     call add(relative_path_splitted, splitted[i])
   endfor
+
+  return s:Filepath.join(relative_path_splitted)
 endfunction
 
 function! s:pathname.split()
