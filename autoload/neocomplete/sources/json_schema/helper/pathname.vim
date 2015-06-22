@@ -9,10 +9,10 @@ let s:class_name = 'neocomplete_json_schema_helper_pathname'
 let s:pathname = {'_name': s:class_name}
 
 function! s:pathname.relative_path_from(basepath) abort
-  if s:Prelude.is_dict(basepath) && basepath._name ==# s:class_name
+  if s:Prelude.is_dict(a:basepath) && a:basepath._name ==# s:class_name
     let basepath = a:basepath
   else
-    let basepath = self.new(basepath)
+    let basepath = neocomplete#sources#json_schema#helper#pathname#new(a:basepath)
   endif
 
   if ! ((self.is_relative && basepath.is_relative) || (self.is_absolute && basepath.is_absolute))
@@ -28,6 +28,7 @@ function! s:pathname.relative_path_from(basepath) abort
   endif
 
   let level = 0
+  let i = 0
   while splitted[i] ==# basepath_splitted[i]
     let level += 1
   endwhile
