@@ -20,7 +20,7 @@ function! neocomplete#sources#json_schema#helper#init(plugin_top_dir) abort
 
   call s:File.mkdir_nothrow(s:cache_dir, 'p')
 
-  let b:neocomplete_json_schema_repo_name = neocomplete#sources#json_schema#helper#repo_name()
+  let b:neocomplete_json_schema_repo_name = s:repo_name()
   if b:neocomplete_json_schema_repo_name == ''
     call s:Message.warn('cannot determine project root directory')
     return
@@ -30,7 +30,7 @@ function! neocomplete#sources#json_schema#helper#init(plugin_top_dir) abort
   if s:cache.has(b:neocomplete_json_schema_repo_name)
     let candidate_cache = s:cache.get(b:neocomplete_json_schema_repo_name)
   else
-    let raw_candidate_cache = neocomplete#sources#json_schema#helper#create_candidate_cache()
+    let raw_candidate_cache = s:create_candidate_cache()
     let candidate_cache = s:JSON.encode(raw_candidate_cache)
     call s:cache.set(b:neocomplete_json_schema_repo_name, candidate_cache)
 
@@ -49,12 +49,12 @@ function! neocomplete#sources#json_schema#helper#init(plugin_top_dir) abort
   call async.run(commandline, 'b:neocomplete_json_schema_candidates_json')
 endfunction
 
-function! neocomplete#sources#json_schema#helper#create_candidate_cache() abort
+function! s:create_candidate_cache() abort
   let schemas = s:Prelude.glob(s:Filepath.join(b:neocomplete_json_schema_repo_name, s:schema_glob))
   let candidates = {}
 
   for filename in schemas
-    let definitions = neocomplete#sources#json_schema#helper#read_definitions(filename)
+    let definitions = s:read_definitions(filename)
     if s:Prelude.is_list(definitions)
       let candidates[filename] = definitions
     endif
@@ -64,8 +64,8 @@ function! neocomplete#sources#json_schema#helper#create_candidate_cache() abort
   return candidates
 endfunction
 
-function! neocomplete#sources#json_schema#helper#read_definitions(filename) abort
-  let decoded = neocomplete#sources#json_schema#helper#decode_json(a:filename)
+function! s:read_definitions(filename) abort
+  let decoded = s:decode_json(a:filename)
   if ! s:Prelude.is_dict(decoded)
     return 0
   endif
@@ -76,7 +76,7 @@ function! neocomplete#sources#json_schema#helper#read_definitions(filename) abor
   return keys(definitions_dict)
 endfunction
 
-function! neocomplete#sources#json_schema#helper#decode_json(filename) abort
+function! s:decode_json(filename) abort
   let json = join(readfile(a:filename))
   try
     let decoded = s:JSON.decode(json)
@@ -87,7 +87,7 @@ function! neocomplete#sources#json_schema#helper#decode_json(filename) abort
   return decoded
 endfunction
 
-function! neocomplete#sources#json_schema#helper#repo_name() abort
+function! s:repo_name() abort
   let b:neocomplete_json_schema_repo_name = s:Prelude.path2project_directory(expand('%'))
   return b:neocomplete_json_schema_repo_name
 endfunction
