@@ -29,7 +29,7 @@ function! s:pathname.relative_path_from(basepath) abort
     let level += 1
   endwhile
 
-  for i in range(len(basepath_splitted) - level - 2)
+  for i in range(len(basepath_splitted) - level)
     call add(relative_path_splitted, '..')
   endfor
 
