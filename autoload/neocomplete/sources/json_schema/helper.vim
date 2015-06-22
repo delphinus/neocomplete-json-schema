@@ -38,15 +38,22 @@ function! neocomplete#sources#json_schema#helper#init(plugin_top_dir) abort
     echo '[neocomplete-json-schema] created candidate cache'
   endif
 
-  let b:neocomplete_json_schema_candidates = []
-  let b:neocomplete_json_schema_candidates_json = ''
-  let cmd = a:plugin_top_dir . '/bin/relpath.rb'
-  let commandline = printf('%s "%s" "%s"',
-        \ cmd,
-        \ escape(candidate_cache, '"'),
-        \ escape(expand('%:p'), '"'))
-  let async = neocomplete#sources#json_schema#helper#async#new()
-  call async.run(commandline, 'b:neocomplete_json_schema_candidates_json')
+  let b:neocomplete_json_schema_candidates = s:create_candidates(candidate_cache)
+endfunction
+
+function! s:create_candidates(candidate_cache)
+  let current_pathname = neocomplete#sources#json_schema#helper#pathname#new(expand('%:p'))
+  let result = []
+  for candidate_key in keys(a:candidate_cache)
+    let candidates = a:candidate_cache[candidate_key]
+    let pathname = neocomplete#sources#json_schema#helper#pathname#new(candidate_key)
+    let relative_path = pathname.relative_path_from(current_pathname)
+    for c in candidates
+      call add(result, relative_path . '#definitions/' . c)
+    endfor
+  endfor
+
+  return result
 endfunction
 
 function! s:create_candidate_cache() abort
