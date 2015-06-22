@@ -23,10 +23,6 @@ function! s:pathname.relative_path_from(basepath) abort
   let basepath_splitted = basepath.split()
 
   let relative_path_splitted = []
-  if self.is_absolute
-    call add(relative_path_splitted, '/')
-  endif
-
   let level = 0
   let i = 0
   while splitted[i] ==# basepath_splitted[i]
