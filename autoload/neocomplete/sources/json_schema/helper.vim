@@ -16,7 +16,7 @@ let s:file_cache = s:Cache.new('file', {'cache_dir': s:cache_dir})
 let s:memory_cache = s:Cache.new('memory')
 
 function! neocomplete#sources#json_schema#helper#init() abort
-
+  let b:neocomplete_json_schema_candidates = []
   let repo_name = s:Prelude.path2project_directory(expand('%'))
   if repo_name == ''
     call s:Message.warn('[neocomplete-json-schema] cannot determine project root directory')
@@ -26,19 +26,17 @@ function! neocomplete#sources#json_schema#helper#init() abort
   let b:neocomplete_json_schema_cache_key = 'neocomplete-json-schema:' . repo_name
 
   if s:memory_cache.has(b:neocomplete_json_schema_cache_key)
-    let tmp = s:memory_cache.get(b:neocomplete_json_schema_cache_key)
-    execute 'let candidates = ' . tmp
+    let candidates = s:memory_cache.get(b:neocomplete_json_schema_cache_key)
   elseif s:file_cache.has(b:neocomplete_json_schema_cache_key)
-    let tmp = s:file_cache.get(b:neocomplete_json_schema_cache_key)
-    execute 'let candidates = ' . tmp
+    let candidates = s:file_cache.get(b:neocomplete_json_schema_cache_key)
     call s:memory_cache.set(b:neocomplete_json_schema_cache_key, candidates)
   else
-    let candidates = s:create_candidate_cache()
-    if s:Prelude.is_list(candidates) && len(candidates)
+    let candidates = s:create_candidate_cache(repo_name)
+    if s:Prelude.is_dict(candidates) && len(candidates)
       call s:memory_cache.set(b:neocomplete_json_schema_cache_key, candidates)
       call s:file_cache.set(b:neocomplete_json_schema_cache_key, candidates)
       redraw!
-      call s:Message.echomsg('[neocomplete-json-schema] created candidate cache')
+      echo '[neocomplete-json-schema] created candidate cache'
     else
       redraw!
       call s:Message.warn('[neocomplete-json-schema] candidate cache cannot be created')
@@ -63,8 +61,8 @@ function! s:arrange_pathname(raw_candidates)
   return candidates
 endfunction
 
-function! s:create_candidate_cache() abort
-  let schemas = s:Prelude.glob(s:Filepath.join(b:neocomplete_json_schema_repo_name, s:schema_glob))
+function! s:create_candidate_cache(repo_name) abort
+  let schemas = s:Prelude.glob(s:Filepath.join(a:repo_name, s:schema_glob))
   let candidates = {}
 
   for filename in schemas
