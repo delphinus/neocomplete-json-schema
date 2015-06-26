@@ -17,7 +17,9 @@ function! neocomplete#sources#json_schema#define()
 endfunction
 
 function! s:source.gather_candidates(...)
-  return deepcopy(b:neocomplete_json_schema_candidates)
+  if exists('b:neocomplete_json_schema_candidates') && len(b:neocomplete_json_schema_candidates)
+    return deepcopy(b:neocomplete_json_schema_candidates)
+  endif
 endfunction
 
 function! s:source.get_complete_position(context)
