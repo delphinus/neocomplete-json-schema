@@ -3,7 +3,7 @@ neocomplete_json_schema
 
 Vim.Message
 System.File
-System.Cache.File
+System.Cache
 System.Filepath
 Prelude
 Web.JSON
