@@ -5,32 +5,44 @@ let s:V        = vital#of('neocomplete_json_schema')
 let s:Message  = s:V.import('Vim.Message')
 let s:File     = s:V.import('System.File')
 let s:Filepath = s:V.import('System.Filepath')
-let s:Cache    = s:V.import('System.Cache.File')
+let s:Cache    = s:V.import('System.Cache')
 let s:Prelude  = s:V.import('Prelude')
 let s:JSON     = s:V.import('Web.JSON')
 
 let s:schema_glob = s:Filepath.join(g:neocomplete_json_schema_directory, '**/*.json')
 let s:cache_dir = s:Filepath.join(g:neocomplete_json_schema_work_dir, 'cache')
 call s:File.mkdir_nothrow(s:cache_dir, 'p')
-let s:cache = s:Cache.new({'cache_dir': s:cache_dir})
+let s:file_cache = s:Cache.new('file', {'cache_dir': s:cache_dir})
+let s:memory_cache = s:Cache.new('memory')
 
 function! neocomplete#sources#json_schema#helper#init() abort
 
-  let b:neocomplete_json_schema_repo_name = s:Prelude.path2project_directory(expand('%'))
-  if b:neocomplete_json_schema_repo_name == ''
-    call s:Message.warn('cannot determine project root directory')
+  let repo_name = s:Prelude.path2project_directory(expand('%'))
+  if repo_name == ''
+    call s:Message.warn('[neocomplete-json-schema] cannot determine project root directory')
     return
   endif
 
-  if s:cache.has(b:neocomplete_json_schema_repo_name)
-    let tmp = s:cache.get(b:neocomplete_json_schema_repo_name)
+  let b:neocomplete_json_schema_cache_key = 'neocomplete-json-schema:' . repo_name
+
+  if s:memory_cache.has(b:neocomplete_json_schema_cache_key)
+    let tmp = s:memory_cache.get(b:neocomplete_json_schema_cache_key)
     execute 'let candidates = ' . tmp
+  elseif s:file_cache.has(b:neocomplete_json_schema_cache_key)
+    let tmp = s:file_cache.get(b:neocomplete_json_schema_cache_key)
+    execute 'let candidates = ' . tmp
+    call s:memory_cache.set(b:neocomplete_json_schema_cache_key, candidates)
   else
     let candidates = s:create_candidate_cache()
-    call s:cache.set(b:neocomplete_json_schema_repo_name, candidates)
-
-    redraw!
-    echo '[neocomplete-json-schema] created candidate cache'
+    if s:Prelude.is_list(candidates) && len(candidates)
+      call s:memory_cache.set(b:neocomplete_json_schema_cache_key, candidates)
+      call s:file_cache.set(b:neocomplete_json_schema_cache_key, candidates)
+      redraw!
+      call s:Message.echomsg('[neocomplete-json-schema] created candidate cache')
+    else
+      redraw!
+      call s:Message.warn('[neocomplete-json-schema] candidate cache cannot be created')
+    endif
   endif
 
   let b:neocomplete_json_schema_candidates = s:arrange_pathname(candidates)
