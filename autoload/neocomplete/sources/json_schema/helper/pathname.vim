@@ -24,9 +24,8 @@ function! s:pathname.relative_path_from(basepath) abort
 
   let relative_path_splitted = []
   let level = 0
-  let i = 0
   if len(splitted) && len(basepath_splitted)
-    while splitted[i] ==# basepath_splitted[i]
+    while splitted[level] ==# basepath_splitted[level]
       let level += 1
     endwhile
   endif
