@@ -20,10 +20,7 @@ function! neocomplete#sources#json_schema#define()
 endfunction
 
 function! s:source.gather_candidates(...)
-  if ! len(b:neocomplete_json_schema_candidates) && len(b:neocomplete_json_schema_candidates_json)
-    let b:neocomplete_json_schema_candidates = s:JSON.decode(b:neocomplete_json_schema_candidates_json)
-  endif
-  return b:neocomplete_json_schema_candidates
+  return deepcopy(b:neocomplete_json_schema_candidates)
 endfunction
 
 function! s:source.get_complete_position(context)
