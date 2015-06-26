@@ -1,10 +1,6 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:V       = vital#of('neocomplete_json_schema')
-let s:Message = s:V.import('Vim.Message')
-let s:JSON    = s:V.import('Web.JSON')
-
 let s:source = {
       \ 'name':        'json_schema',
       \ 'kind':        'manual',
