@@ -52,8 +52,8 @@ function! s:arrange_pathname(raw_candidates)
   for key in keys(a:raw_candidates)
     let definitions = a:raw_candidates[key]
     let absolute_path = neocomplete#sources#json_schema#helper#pathname#new(key)
+    let relative_path = absolute_path.relative_path_from(current_file)
     for def in definitions
-      let relative_path = absolute_path.relative_path_from(current_file)
       call add(candidates, relative_path . '#definitions/' . def)
     endfor
   endfor
