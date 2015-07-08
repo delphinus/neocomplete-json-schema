@@ -30,7 +30,7 @@ function! s:pathname.relative_path_from(basepath) abort
     endwhile
   endif
 
-  for i in range(len(basepath_splitted) - level)
+  for i in range(len(basepath_splitted) - level - 1)
     call add(relative_path_splitted, '..')
   endfor
 
