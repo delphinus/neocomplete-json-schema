@@ -7,12 +7,45 @@ endfunction
 
 describe 'constructor'
 
-  context 'instance has valid properties'
+  context 'when with absolute paths'
 
-    it 'has _path_string'
+    it 'has valid _path_string'
       let path = '/path/to/some/file'
       let instance = s:instance(path)
       Expect instance._path_string ==# path
+    end
+
+    it 'is absolute'
+      let path = '/path/to/some/file'
+      let instance = s:instance(path)
+      Expect instance.is_absolute == 1
+    end
+
+    it 'is not relative'
+      let path = '/path/to/some/file'
+      let instance = s:instance(path)
+      Expect instance.is_relative == 0
+    end
+  end
+
+  context 'when with relative paths'
+
+    it 'has valid _path_string'
+      let path = 'path/to/some/file'
+      let instance = s:instance(path)
+      Expect instance._path_string ==# path
+    end
+
+    it 'is not absolute'
+      let path = '/path/to/some/file'
+      let instance = s:instance(path)
+      Expect instance.is_absolute == 1
+    end
+
+    it 'is relative'
+      let path = '/path/to/some/file'
+      let instance = s:instance(path)
+      Expect instance.is_relative == 0
     end
   end
 end
