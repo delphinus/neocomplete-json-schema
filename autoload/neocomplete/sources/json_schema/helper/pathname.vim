@@ -1,6 +1,3 @@
-let s:save_cpo = &cpo
-set cpo&vim
-
 let s:V        = vital#of('neocomplete_json_schema')
 let s:Filepath = s:V.import('System.Filepath')
 let s:Prelude  = s:V.import('Prelude')
@@ -52,6 +49,3 @@ function! neocomplete#sources#json_schema#helper#pathname#new(path_string) abort
   let pathname.is_relative = s:Filepath.is_relative(a:path_string)
   return pathname
 endfunction
-
-let &cpo = s:save_cpo
-unlet s:save_cpo
