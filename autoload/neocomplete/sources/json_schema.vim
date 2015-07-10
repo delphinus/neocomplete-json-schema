@@ -26,5 +26,12 @@ function! s:source.get_complete_position(context) abort
   return matchend(a:context.input, '"\$ref"\s*:\s*"')
 endfunction
 
+" For testing {{{
+function! neocomplete#sources#json_schema#_sid() abort
+  return maparg('<SID>', 'n')
+endfunction
+nnoremap <SID> <SID>
+" }}}
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
