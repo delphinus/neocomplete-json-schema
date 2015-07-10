@@ -41,7 +41,7 @@ function! s:pathname.relative_path_from(basepath) abort
   return s:Filepath.join(relative_path_splitted)
 endfunction
 
-function! s:pathname.split()
+function! s:pathname.split() abort
   return s:Filepath.split(self._path_string)
 endfunction
 

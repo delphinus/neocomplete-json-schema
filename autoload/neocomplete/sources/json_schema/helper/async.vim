@@ -16,7 +16,7 @@ function! s:async.run(command, resultvar) abort
   let self.process = s:Reunions.process(a:command)
   let self.process.resultvar = a:resultvar
 
-  function! self.process.then(result, ...)
+  function! self.process.then(result, ...) abort
     execute 'let ' . self.resultvar . ' = "' . escape(a:result, '"') . '"'
     if self._autocmd
       autocmd! neocomplete-json-schema-vimproc

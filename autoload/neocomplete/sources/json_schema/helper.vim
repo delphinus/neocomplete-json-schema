@@ -18,7 +18,7 @@ let s:memory_cache = s:Cache.new('memory')
 function! neocomplete#sources#json_schema#helper#init() abort
   let b:neocomplete_json_schema_candidates = []
   let repo_name = s:Prelude.path2project_directory(expand('%'))
-  if repo_name == ''
+  if repo_name ==# ''
     call s:Message.warn('[neocomplete-json-schema] cannot determine project root directory')
     return
   endif
@@ -46,7 +46,7 @@ function! neocomplete#sources#json_schema#helper#init() abort
   let b:neocomplete_json_schema_candidates = s:arrange_pathname(candidates)
 endfunction
 
-function! s:arrange_pathname(raw_candidates)
+function! s:arrange_pathname(raw_candidates) abort
   let current_file = neocomplete#sources#json_schema#helper#pathname#new(expand('%:p'))
   let candidates = []
   for key in keys(a:raw_candidates)

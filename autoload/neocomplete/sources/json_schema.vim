@@ -12,17 +12,17 @@ let s:source = {
       \ 'matchers':    ['matcher_fuzzy'],
       \ }
 
-function! neocomplete#sources#json_schema#define()
+function! neocomplete#sources#json_schema#define() abort
   return s:source
 endfunction
 
-function! s:source.gather_candidates(...)
+function! s:source.gather_candidates(...) abort
   if exists('b:neocomplete_json_schema_candidates') && len(b:neocomplete_json_schema_candidates)
     return deepcopy(b:neocomplete_json_schema_candidates)
   endif
 endfunction
 
-function! s:source.get_complete_position(context)
+function! s:source.get_complete_position(context) abort
   return matchend(a:context.input, '"\$ref"\s*:\s*"')
 endfunction
 
