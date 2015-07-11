@@ -6,10 +6,10 @@ task :dump do
   sh 'vim --version'
 end
 
-task :flavor do
-  sh 'bundle exec vim-flavor test t'
-end
+tests = %w[
+  t/neocomplete/sources/json_schema/helper/pathname.vim
+]
 
-task :local do
-  sh 'bundle exec vim-flavor test t'
+task :flavor do
+  sh "bundle exec vim-flavor test #{tests.join ' '}"
 end
