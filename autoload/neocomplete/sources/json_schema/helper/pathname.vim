@@ -22,12 +22,16 @@ function! s:pathname.relative_path_from(basepath) abort
   let relative_path_splitted = []
   let level = 0
   if len(splitted) && len(basepath_splitted)
-    while splitted[level] ==# basepath_splitted[level]
+    while level < len(splitted) && level < len(basepath_splitted) && splitted[level] ==# basepath_splitted[level]
       let level += 1
     endwhile
   endif
 
-  for i in range(len(basepath_splitted) - level - 1)
+  if len(splitted) == level && len(basepath_splitted) == level
+    return '.'
+  endif
+
+  for i in range(len(basepath_splitted) - level)
     call add(relative_path_splitted, '..')
   endfor
 
