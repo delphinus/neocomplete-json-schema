@@ -31,7 +31,7 @@ function! s:pathname.relative_path_from(basepath) abort
     call add(relative_path_splitted, '..')
   endfor
 
-  for i in range(level + 1, len(splitted) - 1)
+  for i in range(level, len(splitted) - 1)
     call add(relative_path_splitted, splitted[i])
   endfor
 

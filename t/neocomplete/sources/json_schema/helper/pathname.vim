@@ -77,4 +77,27 @@ describe 'relative_path_from()'
       end
     end
   end
+
+  describe 'calculating'
+
+    context 'when paths are relative'
+
+      context 'when base is `basename`'
+
+        before
+          let g:some_base = 'hoge'
+        end
+
+        context 'when target is a deep path'
+
+          it 'returns values validly'
+            let base = g:some_base
+            let target = s:instance('some/deep/path/to/file')
+            let result = 'some/deep/path/to/file'
+            Expect target.relative_path_from(base) ==# result
+          end
+        end
+      end
+    end
+  end
 end
