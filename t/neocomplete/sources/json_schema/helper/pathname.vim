@@ -362,6 +362,33 @@ describe 'relative_path_from()'
           end
         end
       end
+
+      context 'when base is /'
+
+        before
+          let g:some_base = '/'
+        end
+
+        context 'when target is /'
+
+          it 'returns values validly'
+            let base = g:some_base
+            let target = s:instance(base)
+            let result = '.'
+            Expect target.relative_path_from(base) ==# result
+          end
+        end
+
+        context 'when target is a deep path'
+
+          it 'returns values validly'
+            let base = g:some_base
+            let target = s:instance('/deep/path/to/file')
+            let result = 'deep/path/to/file'
+            Expect target.relative_path_from(base) ==# result
+          end
+        end
+      end
     end
   end
 end
