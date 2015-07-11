@@ -18,13 +18,13 @@ describe 'constructor'
     it 'is absolute'
       let path = '/path/to/some/file'
       let instance = s:instance(path)
-      Expect instance.is_absolute == 1
+      Expect instance.is_absolute to_be_true
     end
 
     it 'is not relative'
       let path = '/path/to/some/file'
       let instance = s:instance(path)
-      Expect instance.is_relative == 0
+      Expect instance.is_relative to_be_false
     end
   end
 
@@ -39,13 +39,13 @@ describe 'constructor'
     it 'is not absolute'
       let path = '/path/to/some/file'
       let instance = s:instance(path)
-      Expect instance.is_absolute == 1
+      Expect instance.is_absolute to_be_true
     end
 
     it 'is relative'
       let path = '/path/to/some/file'
       let instance = s:instance(path)
-      Expect instance.is_relative == 0
+      Expect instance.is_relative to_be_false
     end
   end
 end
