@@ -221,5 +221,147 @@ describe 'relative_path_from()'
         end
       end
     end
+
+    context 'when paths are absolute'
+
+      context 'when base is `basename`'
+
+        before
+          let g:some_base = '/hoge'
+        end
+
+        context 'when target is also a `basename` path'
+
+          context 'when target is not base'
+
+            it 'returns values validly'
+              let base = g:some_base
+              let target = s:instance('/page')
+              let result = '../page'
+              Expect target.relative_path_from(base) ==# result
+            end
+          end
+
+          context 'when target is base'
+
+            it 'returns values validly'
+              let base = g:some_base
+              let target = s:instance(base)
+              let result = '.'
+              Expect target.relative_path_from(base) ==# result
+            end
+          end
+        end
+
+        context 'when target is a deep path'
+
+          context 'when target exists on other path than base completely'
+
+            it 'returns values validly'
+              let base = g:some_base
+              let target = s:instance('/some/deep/path/to/file')
+              let result = '../some/deep/path/to/file'
+              Expect target.relative_path_from(base) ==# result
+            end
+          end
+
+          context 'when target is descendant of base'
+
+            it 'returns values validly'
+              let base = g:some_base
+              let target = s:instance('/hoge/deep/path/to/file')
+              let result = 'deep/path/to/file'
+              Expect target.relative_path_from(base) ==# result
+            end
+          end
+        end
+      end
+
+      context 'when base is a deep path'
+
+        before
+          let g:some_base = '/some/deep/path/to/file'
+        end
+
+        context 'when target is a `basename` path'
+
+          context 'when target exists on other path than base completely'
+
+            it 'returns values validly'
+              let base = g:some_base
+              let target = s:instance('/page')
+              let result = '../../../../../page'
+              Expect target.relative_path_from(base) ==# result
+            end
+          end
+
+          context 'when target is ancestor of base'
+
+            it 'returns values validly'
+              let base = g:some_base
+              let target = s:instance('/some')
+              let result = '../../../..'
+              Expect target.relative_path_from(base) ==# result
+            end
+          end
+        end
+
+        context 'when target is a deep path'
+
+          context 'when target is base'
+
+            it 'returns values validly'
+              let base = g:some_base
+              let target = s:instance(base)
+              let result = '.'
+              Expect target.relative_path_from(base) ==# result
+            end
+          end
+
+          context 'when target is not base'
+
+            context 'when target exists on other path completely'
+
+              it 'returns values validly'
+                let base = g:some_base
+                let target = s:instance('/other/deep/path/to/file')
+                let result = '../../../../../other/deep/path/to/file'
+                Expect target.relative_path_from(base) ==# result
+              end
+            end
+
+            context 'when target is descendant of base'
+
+              it 'returns values validly'
+                let base = g:some_base
+                let target = s:instance('/some/deep/path/to/file/deeper/to/deeper')
+                let result = 'deeper/to/deeper'
+                Expect target.relative_path_from(base) ==# result
+              end
+            end
+
+            context 'when target is ancestor of base'
+
+              it 'returns values validly'
+                let base = g:some_base
+                let target = s:instance('/some/deep/path')
+                let result = '../..'
+                Expect target.relative_path_from(base) ==# result
+              end
+            end
+
+            context 'when target has a part of base'
+
+              it 'returns values validly'
+                let base = g:some_base
+                let target = s:instance('/some/deep/another/path')
+                let result = '../../../another/path'
+                Expect target.relative_path_from(base) ==# result
+              end
+            end
+          end
+        end
+      end
+    end
   end
 end
