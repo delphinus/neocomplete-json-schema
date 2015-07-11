@@ -52,3 +52,31 @@ describe 'constructor'
     end
   end
 end
+
+describe 'relative_path_from()'
+
+  describe 'throwing'
+
+    before
+      let g:some_error = 'pathnames must be both relative or both absolute\.'
+    end
+
+    context 'when base is relative and target is absolute'
+
+      it 'throw error'
+        let base = s:instance('path/to/some/file')
+        let target = s:instance('/path/to/some/file')
+        Expect expr { target.relative_path_from(base) } to_throw g:some_error
+      end
+    end
+
+    context 'when base is absolute and target is relative'
+
+      it 'throw error'
+        let base = s:instance('/path/to/some/file')
+        let target = s:instance('path/to/some/file')
+        Expect expr { target.relative_path_from(base) } to_throw g:some_error
+      end
+    end
+  end
+end
