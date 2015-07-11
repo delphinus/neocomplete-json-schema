@@ -167,23 +167,55 @@ describe 'relative_path_from()'
         context 'when target is a deep path'
 
           context 'when target is base'
+
+            it 'returns values validly'
+              let base = g:some_base
+              let target = s:instance(base)
+              let result = '.'
+              Expect target.relative_path_from(base) ==# result
+            end
           end
 
           context 'when target is not base'
 
             context 'when target exists on other path completely'
+
+              it 'returns values validly'
+                let base = g:some_base
+                let target = s:instance('other/deep/path/to/file')
+                let result = '../../../../../other/deep/path/to/file'
+                Expect target.relative_path_from(base) ==# result
+              end
             end
 
             context 'when target is descendant of base'
+
+              it 'returns values validly'
+                let base = g:some_base
+                let target = s:instance('some/deep/path/to/file/deeper/to/deeper')
+                let result = 'deeper/to/deeper'
+                Expect target.relative_path_from(base) ==# result
+              end
             end
 
             context 'when target is ancestor of base'
+
+              it 'returns values validly'
+                let base = g:some_base
+                let target = s:instance('some/deep/path')
+                let result = '../..'
+                Expect target.relative_path_from(base) ==# result
+              end
             end
 
             context 'when target has a part of base'
-            end
 
-            context 'when target exists on other path than base completely'
+              it 'returns values validly'
+                let base = g:some_base
+                let target = s:instance('some/deep/another/path')
+                let result = '../../../another/path'
+                Expect target.relative_path_from(base) ==# result
+              end
             end
           end
         end
