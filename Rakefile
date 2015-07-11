@@ -8,5 +8,5 @@ task :dump do
 end
 
 task :flavor do
-  sh 'bundle exec vim-flavor test t/neocomplete/sources/json_schema/helper/pathname.vim'
+  sh 'bundle exec vim-flavor test t'
 end
