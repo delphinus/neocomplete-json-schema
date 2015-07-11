@@ -1,5 +1,4 @@
 call vspec#hint({'sid': 'neocomplete#sources#json_schema#_sid()'})
-runtime! autoload/neocomplete/sources/json_schema/helper/pathname.vim
 
 function! s:instance(...)
   return neocomplete#sources#json_schema#helper#pathname#new(a:1)
