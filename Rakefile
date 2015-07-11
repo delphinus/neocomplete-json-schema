@@ -11,5 +11,5 @@ tests = %w[
 ]
 
 task :flavor do
-  sh "bundle exec vim-flavor test #{tests.join ' '}"
+  sh "bundle exec vim-flavor test #{tests.join ' '} -v"
 end
