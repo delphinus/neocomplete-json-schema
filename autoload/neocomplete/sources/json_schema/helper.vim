@@ -14,27 +14,34 @@ let s:cache_dir = s:Filepath.join(g:neocomplete#json_schema_work_dir, 'cache')
 call s:File.mkdir_nothrow(s:cache_dir, 'p')
 let s:file_cache = s:Cache.new('file', {'cache_dir': s:cache_dir})
 let s:memory_cache = s:Cache.new('memory')
+let s:cache_key_header = {
+      \ 'candidates': 'neocomplete-json-schema-candidates:',
+      \ 'revision':   'neocomplete-json-schema-revision:',
+      \ }
 
 function! neocomplete#sources#json_schema#helper#init() abort
   let b:neocomplete_json_schema_candidates = []
-  let repo_name = s:Prelude.path2project_directory(expand('%'))
-  if repo_name ==# ''
+  let repo_dir = s:Prelude.path2project_directory(expand('%'))
+  if repo_dir ==# ''
     call s:Message.warn('[neocomplete-json-schema] cannot determine project root directory')
     return
   endif
 
-  let cache_key = 'neocomplete-json-schema-candidates:' . repo_name
+  let current_revision = s:get_current_revision(repo_dir)
+  let cache_key = s:cache_key_header.candidates . repo_dir
+  let is_latest = s:is_cache_latest(repo_dir, current_revision)
 
-  if s:memory_cache.has(cache_key)
+  if is_latest && s:memory_cache.has(cache_key)
     let candidates = s:memory_cache.get(cache_key)
-  elseif s:file_cache.has(cache_key)
+  elseif is_latest && s:file_cache.has(cache_key)
     let candidates = s:file_cache.get(cache_key)
-    call s:memory_cache.set(cache_key)
+    call s:memory_cache.set(cache_key, candidates)
   else
-    let candidates = s:create_candidate_cache(repo_name)
+    let candidates = s:create_candidate_cache(repo_dir)
     if s:Prelude.is_dict(candidates) && len(candidates)
-      call s:memory_cache.set(cache_key)
-      call s:file_cache.set(cache_key)
+      call s:memory_cache.set(cache_key, candidates)
+      call s:file_cache.set(cache_key, candidates)
+      call s:set_revision_cache(repo_dir, current_revision)
       redraw!
       echo '[neocomplete-json-schema] created candidate cache'
     else
@@ -45,6 +52,25 @@ function! neocomplete#sources#json_schema#helper#init() abort
   endif
 
   let b:neocomplete_json_schema_candidates = s:arrange_pathname(candidates)
+endfunction
+
+function! s:is_cache_latest(repo_dir, current_revision) abort
+  let cache_key = s:cache_key_header.revision . a:repo_dir
+  if ! s:file_cache.has(cache_key)
+    return 0
+  endif
+  let last_revision = s:file_cache.get(cache_key)
+  return last_revision ==# a:current_revision
+endfunction
+
+function! s:set_revision_cache(repo_dir, current_revision) abort
+  let cache_key = s:cache_key_header.revision . a:repo_dir
+  call s:file_cache.set(cache_key, a:current_revision)
+endfunction
+
+function! s:get_current_revision(repo_dir) abort
+  let cmd = printf('git --git-dir="%s" rev-parse HEAD', s:Filepath.join(a:repo_dir, '.git'))
+  return substitute(system(cmd), '\n', '', '')
 endfunction
 
 function! s:arrange_pathname(raw_candidates) abort
@@ -62,8 +88,8 @@ function! s:arrange_pathname(raw_candidates) abort
   return candidates
 endfunction
 
-function! s:create_candidate_cache(repo_name) abort
-  let schemas = s:Prelude.glob(s:Filepath.join(a:repo_name, s:schema_glob))
+function! s:create_candidate_cache(repo_dir) abort
+  let schemas = s:Prelude.glob(s:Filepath.join(a:repo_dir, s:schema_glob))
   let candidates = {}
 
   for filename in schemas
