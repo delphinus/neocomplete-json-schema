@@ -40,6 +40,7 @@ function! neocomplete#sources#json_schema#helper#init() abort
     else
       redraw!
       call s:Message.warn('[neocomplete-json-schema] candidate cache cannot be created')
+      return
     endif
   endif
 
