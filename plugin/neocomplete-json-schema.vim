@@ -14,12 +14,12 @@ augroup NeoCompleteJsonSchema
         \   | endif
 augroup END
 
-if !exists('g:neocomplete_json_schema_work_dir')
-  let g:neocomplete_json_schema_work_dir = $HOME . '/.neocomplete-json-schema'
+if !exists('g:neocomplete#json_schema_work_dir')
+  let g:neocomplete#json_schema_work_dir = $HOME . '/.neocomplete-json-schema'
 endif
 
-if !exists('g:neocomplete_json_schema_directory')
-  let g:neocomplete_json_schema_directory = 'schema'
+if !exists('g:neocomplete#json_schema_directory')
+  let g:neocomplete#json_schema_directory = 'schema'
 endif
 
 let &cpo = s:save_cpo
