@@ -1,5 +1,9 @@
 source t/helpers/setup.vim
 
+if ! has('lua')
+  finish
+endif
+
 describe 'escape()'
 
   context 'when g:neocomplete#enable_camel_case is off'
