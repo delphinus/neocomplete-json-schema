@@ -23,18 +23,18 @@ function! neocomplete#sources#json_schema#helper#init() abort
     return
   endif
 
-  let b:neocomplete_json_schema_cache_key = 'neocomplete-json-schema:' . repo_name
+  let cache_key = 'neocomplete-json-schema-candidates:' . repo_name
 
-  if s:memory_cache.has(b:neocomplete_json_schema_cache_key)
-    let candidates = s:memory_cache.get(b:neocomplete_json_schema_cache_key)
-  elseif s:file_cache.has(b:neocomplete_json_schema_cache_key)
-    let candidates = s:file_cache.get(b:neocomplete_json_schema_cache_key)
-    call s:memory_cache.set(b:neocomplete_json_schema_cache_key, candidates)
+  if s:memory_cache.has(cache_key)
+    let candidates = s:memory_cache.get(cache_key)
+  elseif s:file_cache.has(cache_key)
+    let candidates = s:file_cache.get(cache_key)
+    call s:memory_cache.set(cache_key)
   else
     let candidates = s:create_candidate_cache(repo_name)
     if s:Prelude.is_dict(candidates) && len(candidates)
-      call s:memory_cache.set(b:neocomplete_json_schema_cache_key, candidates)
-      call s:file_cache.set(b:neocomplete_json_schema_cache_key, candidates)
+      call s:memory_cache.set(cache_key)
+      call s:file_cache.set(cache_key)
       redraw!
       echo '[neocomplete-json-schema] created candidate cache'
     else
