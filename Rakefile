@@ -7,6 +7,7 @@ task :dump do
 end
 
 tests = %w[
+  t/neocomplete/filters/matcher_super_fuzzy.vim
   t/neocomplete/sources/json_schema/helper/pathname.vim
 ]
 
