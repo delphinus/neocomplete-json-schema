@@ -12,7 +12,7 @@ function! neocomplete#filters#matcher_super_fuzzy#escape(string) abort
 do
   local string = vim.eval('a:string')
   local result = vim.eval('result')
-  local result_string = ''
+  local result_string = '.*'
   local meta_char = '%[]().*+?^$-'
   for i = 1, #string do
     local char = string.sub(string, i, i)
