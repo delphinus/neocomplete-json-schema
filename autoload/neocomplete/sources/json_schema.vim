@@ -9,7 +9,7 @@ let s:source = {
       \ 'is_volatile': 1,
       \ 'rank':        100,
       \ 'hooks':       {},
-      \ 'matchers':    ['matcher_fuzzy'],
+      \ 'matchers':    ['matcher_super_fuzzy'],
       \ }
 
 function! neocomplete#sources#json_schema#define() abort
